@@ -6,7 +6,6 @@ import axios from "axios";
 import "./App.scss";
 
 function App() {
-
   let pokémon = [
     { id: 1, name: "Bulbasaur", types: ["poison", "grass"] },
     { id: 5, name: "Charmeleon", types: ["fire"] },
@@ -55,7 +54,9 @@ function App() {
 
   const [estadopoke, setEstadopoke] = useState(false);
 
-  const [cartasPoke, setCartasPoke] = useState([]);
+  const [cartasPoke1, setCartasPoke1] = useState([]);
+  const [cartasPoke2, setCartasPoke2] = useState([]);
+
   /* useEffect(()=> {
      fetchData();
  }, [data]);*/
@@ -103,7 +104,6 @@ function App() {
       listaPokemonesId.push(Math.floor(Math.random() * 890));
     }
     listaPokemonesId.map((pokeid) => {
-
       const api = axios
         .get(`https://pokeapi.co/api/v2/pokemon/${pokeid}`)
         .then((response) => {
@@ -111,17 +111,17 @@ function App() {
           listaPokemonCards.push({
             id: response.data.id,
             name: response.data.name,
-            types: tipos
+            types: tipos,
           });
           console.log(tipos.toString());
           if (listaPokemonCards.length === 10) {
-            return (setCartasPoke(listaPokemonCards)); // ACA ESTABA EL ERROR
+            setCartasPoke1(listaPokemonCards.slice(0, 5)); // ACA ESTABA EL ERROR
+            setCartasPoke2(listaPokemonCards.slice(5, 10));
           }
         });
     });
     //  }, [])
   };
-
 
   let poke = {
     id: contentpoke[0],
@@ -149,34 +149,54 @@ function App() {
       ) : null}
 
       <div className="PokeContainer">
-        <div className="Jugador1">Jugador1</div>
+        <div className="Jugador1 PokeContainer">
+          Jugador1
+          {cartasPoke1.map((unPokemon) => (
+            <PokemonCard
+              key={uniqid()}
+              id={unPokemon.id}
+              name={unPokemon.name}
+              types={unPokemon.types.toString()}
+              bg={tipos
+                .filter((unTipo) => unTipo.types === unPokemon.types[0])
+                .map((tipoElegido) => tipoElegido.color)}
+              unPokemon={unPokemon}
+              selectPokemon={
+                // Se manda una props que contiene una funcion ( Arrow function )
+                (contentpoke) => setContentpoke(contentpoke)
+              }
+              onOff={(estadopoke) => setEstadopoke(estadopoke)}
+            />
+          ))}
+        </div>
         <button onClick={repartirPokemon}>Repartir Cartas</button>
-        <div className="Jugador2">Jugador2</div>
+
+        <div className="Jugador2 PokeContainer">
+          Jugador2
+          {cartasPoke2.map((unPokemon) => (
+            <PokemonCard
+              key={uniqid()}
+              id={unPokemon.id}
+              name={unPokemon.name}
+              types={unPokemon.types.toString()}
+              bg={tipos
+                .filter((unTipo) => unTipo.types === unPokemon.types[0])
+                .map((tipoElegido) => tipoElegido.color)}
+              unPokemon={unPokemon}
+              selectPokemon={
+                // Se manda una props que contiene una funcion ( Arrow function )
+                (contentpoke) => setContentpoke(contentpoke)
+              }
+              onOff={(estadopoke) => setEstadopoke(estadopoke)}
+            />
+          ))}
+        </div>
         {/* <FormularioIngreso
           guardarPokemon={guardarPokemon}
           newPokemon={newPokemon}
           setNewPokemon={setNewPokemon}
         /> */}
-        {console.log(cartasPoke)}
-        {cartasPoke.map((unPokemon) => (
-
-          //Hay un error donde al actualizar el estado de la lista, se cae.
-          <PokemonCard
-            key={uniqid()}
-            id={unPokemon.id}
-            name={unPokemon.name}
-            types={unPokemon.types.toString()}
-            bg={tipos
-              .filter((unTipo) => unTipo.types === unPokemon.types[0])
-              .map((tipoElegido) => tipoElegido.color)}
-            unPokemon={unPokemon}
-            selectPokemon={
-              // Se manda una props que contiene una funcion ( Arrow function )
-              (contentpoke) => setContentpoke(contentpoke)
-            }
-            onOff={(estadopoke) => setEstadopoke(estadopoke)}
-          />
-        ))}
+        {console.log(cartasPoke1)}
       </div>
     </>
   );
